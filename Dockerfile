@@ -10,18 +10,19 @@ RUN apt-get update && apt-get install -y \
 # Instal Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Tentukan folder kerja di root container
+# Tentukan folder kerja
 WORKDIR /var/www/html
 
-# Salin isi folder backend ke root container
+# Salin isi folder backend ke container
 COPY backend/ .
 
-# Jalankan composer install di root (karena file sekarang ada di sini)
+# Jalankan composer install
 ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN composer install --no-dev --optimize-autoloader
 
-# Pengaturan izin
-RUN chown -R www-data:www-data /var/www/html
+# PERBAIKAN: Gunakan perintah 'mkdir' agar folder selalu ada sebelum 'chown'
+RUN mkdir -p storage bootstrap/cache && \
+    chown -R www-data:www-data /var/www/html
 
 EXPOSE 80
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=80"]
