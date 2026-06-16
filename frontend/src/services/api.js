@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: 'https://catatankeuangan-production-6814.up.railway.app/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://catatankeuangan-production-6814.up.railway.app/api',
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
