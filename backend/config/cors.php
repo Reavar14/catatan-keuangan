@@ -20,7 +20,7 @@ return [
     'allowed_methods' => ['*'],
 
     // Pastikan URL TIDAK ADA garis miring di akhir
-    'allowed_origins' => ['https://frontend-production-catatan-keuangan.up.railway.app'],
+    'allowed_origins' => ['*'],
 
     'allowed_origins_patterns' => [],
 
