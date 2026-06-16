@@ -1,28 +1,37 @@
 FROM php:8.2-cli
 
-# 1. Instal dependensi
+# Update dan instal semua dependensi yang diperlukan sekaligus
 RUN apt-get update && apt-get install -y \
-    libpng-dev libjpeg-dev libfreetype6-dev libicu-dev libzip-dev zip unzip git \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libicu-dev \
+    libzip-dev \
+    libpq-dev \
+    zip \
+    unzip \
+    git \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-configure intl \
-    && docker-php-ext-install pdo_pgsql gd intl zip
+    && docker-php-ext-install pdo_mysql pdo_pgsql gd intl zip
 
-# 2. Tentukan folder kerja (Sesuaikan jika composer.json Anda di dalam subfolder)
+# Tentukan folder kerja
 WORKDIR /var/www/html
 
-# 3. Izinkan superuser AGAR TIDAK ERROR "Do not run Composer as root"
+# Izinkan Composer berjalan sebagai root
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# 4. Salin file project DULU, baru jalankan composer install
+# Salin semua file
 COPY . .
 
-# 5. Salin composer dari image resmi
+# Salin Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# 6. Jalankan instalasi
+# Jalankan instalasi composer
 RUN composer install --no-dev --optimize-autoloader
 
-# 7. Sisa konfigurasi
+# Atur permission
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+
 EXPOSE 80
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=80"]
